@@ -1,0 +1,65 @@
+[
+  {
+    "id": "demo-admin",
+    "businessName": "Inventify Demo",
+    "fullName": "Demo Admin",
+    "email": "admin@inventify.com",
+    "passwordHash": "40d03bc3b2b8c73c411aa75324d61d327ce65cedf64508505e66eefc25bc59f585ceb3ec5f1c8da990ee305fab89f47a12f1be8b672e9ef5bf6357a272006bec"
+  },
+  {
+    "id": "user-1790941279947-350ebb",
+    "businessName": "Test Co",
+    "fullName": "User Test",
+    "email": "testuser@example.com",
+    "passwordHash": "3124bc02c0387c93cc0e9b9bc99aa45a0b1d29b61660733cc3a8b53df37dc838f7a70322e702e9d1db3ea557d935afa0b2b35d532176cbc0d776621b380bb4d6"
+  },
+  {
+    "id": "user-1790941478786-150676",
+    "businessName": "Auth Upgrade",
+    "fullName": "Jane Doe",
+    "email": "jane@example.com",
+    "passwordHash": "8dae21f6836e2e581701ad274df96e9c347602d75c28c1424f76cf879d2c7f912035b4d7b2c51519d26e438d4d7f03f7583cf93558740b28574764152f581aba"
+  },
+  {
+    "id": "user-1790941500855-f6cf5b",
+    "businessName": "Auth Upgrade",
+    "fullName": "Jane Doe",
+    "email": "jane2@example.com",
+    "passwordHash": "8dae21f6836e2e581701ad274df96e9c347602d75c28c1424f76cf879d2c7f912035b4d7b2c51519d26e438d4d7f03f7583cf93558740b28574764152f581aba"
+  },
+  {
+    "id": "user-1790977649962-f9d785",
+    "businessName": "Patch Check",
+    "fullName": "Patch User",
+    "email": "patch@example.com",
+    "passwordHash": "385cb78dba8c86ef142f595c8e82f49df603e22bb87c56c36cd4ffea2e704ac1240146d91a301b1a26b2e59106750e47bb6d4f60d385a99786f6030d3845d033"
+  },
+  {
+    "id": "user-1790977905218-2c77e7",
+    "businessName": "Acme Warehouse",
+    "fullName": "Sam Lee",
+    "email": "sam@example.com",
+    "passwordHash": "f7f69a3d21edeb4f005ac29519f22cf8c636c3edff78e0cd519c1957a81f74546b560e304f0abbd851dd5859f7eecc02882f9b36b4ffd7f7fa42293362fdb858"
+  },
+  {
+    "id": "user-1790978048477-6db199",
+    "businessName": "Add Edit Co",
+    "fullName": "Taylor Chen",
+    "email": "taylor@example.com",
+    "passwordHash": "f7f69a3d21edeb4f005ac29519f22cf8c636c3edff78e0cd519c1957a81f74546b560e304f0abbd851dd5859f7eecc02882f9b36b4ffd7f7fa42293362fdb858"
+  },
+  {
+    "id": "user-1790978072545-a27151",
+    "businessName": "Add Edit Co",
+    "fullName": "Taylor Chen",
+    "email": "taylor2@example.com",
+    "passwordHash": "f7f69a3d21edeb4f005ac29519f22cf8c636c3edff78e0cd519c1957a81f74546b560e304f0abbd851dd5859f7eecc02882f9b36b4ffd7f7fa42293362fdb858"
+  },
+  {
+    "id": "user-1790979642424-810044",
+    "businessName": "anoali",
+    "fullName": "admin",
+    "email": "admin1@system.com",
+    "passwordHash": "98fe80629e21defac5b34bcde9d52c39ea444f285bd3f56f9ba3122f3c80d4960c47ef9babd74d18307ce127bb0437782da71f104c2fe936fa3326a868331f3f"
+  }
+]

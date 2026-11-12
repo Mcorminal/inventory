@@ -1,0 +1,16 @@
+{
+  "name": "inventify-backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@zxing/browser": "^0.2.1",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^10.4.0",
+    "sql.js": "^1.14.2"
+  }
+}

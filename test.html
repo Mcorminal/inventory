@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inventify</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234f46e5'/%3E%3Cpath d='M20 20h24v24H20z' fill='none' stroke='white' stroke-width='5'/%3E%3Cpath d='M26 26h12v12H26z' fill='none' stroke='white' stroke-width='4'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef0f7;--card:#fff;--ink:#121a2e;--mut:#6b7590;--line:#e3e6f0;--pri:#4f46e5;--priS:#eceafd;--red:#c81e2b;--redS:#fdeaec;--grn:#0f9d6b;--grnS:#e3f6ee;--amb:#b7791f;--ambS:#fdf3dc;--dark:#121a2e;--frame:#cfd3e4}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0e1322;--card:#171e33;--ink:#eef0f8;--mut:#98a2c0;--line:#252d48;--priS:#28286b;--redS:#3a1a22;--grnS:#123a2e;--ambS:#3a2f14;--dark:#4f46e5;--frame:#05070f}}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:Inter,system-ui,sans-serif;background:#020814;color:var(--ink);display:flex;justify-content:center;align-items:center;font-size:13px}
+#app{width:100%;max-width:360px;height:100%;max-height:620px;background:rgba(12,20,34,.98);display:flex;flex-direction:column;position:relative;overflow:hidden;padding-top:env(safe-area-inset-top,0px)}
+@media(min-width:500px){#app{border-radius:26px;height:calc(100% - 32px);box-shadow:0 18px 40px rgba(0,0,0,.45)}}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+header{padding:12px 16px 8px;display:flex;align-items:center;gap:10px}
+header .logo{width:30px;height:30px;border-radius:8px;background:var(--dark);display:grid;place-items:center;color:#fff;font-weight:800}
+header small{color:var(--mut);font-size:10px;display:block}
+header b{font-size:14px}
+header .sp{flex:1}
+main{flex:1;overflow-y:auto;padding:4px 14px 16px}
+nav{display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--mut);padding:4px;font-weight:500}
+nav button.on{color:var(--pri);font-weight:700}
+nav svg{width:20px;height:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:8px}.sp{flex:1}.between{justify-content:space-between}
+.mut{color:var(--mut)}.tiny{font-size:10.5px}.h{font-size:15px;font-weight:700;margin:14px 2px 8px}
+.big{font-size:26px;font-weight:800;color:var(--pri);letter-spacing:-.02em}
+.tag{font-size:10px;font-weight:700;padding:3px 7px;border-radius:99px;background:var(--priS);color:var(--pri);white-space:nowrap}
+.tag.r{background:var(--redS);color:var(--red)}.tag.g{background:var(--grnS);color:var(--grn)}.tag.a{background:var(--ambS);color:var(--amb)}
+.btn{background:var(--dark);color:#fff;border-radius:10px;padding:10px 14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.pri{background:var(--pri)}.btn.full{width:100%}.btn.red{background:var(--red)}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.5}
+.alert{background:var(--redS);border:1px solid #f3b7bd55;border-radius:14px;padding:12px;margin-bottom:10px}
+.alert .it{background:var(--card);border-radius:8px;padding:8px 10px;margin:6px 0;display:flex;justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi b{font-size:20px;display:block;margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;overflow-x:visible;padding:2px 0 8px}
+.chip{padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:11.5px;white-space:nowrap}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+input,select{font:inherit;width:100%;padding:10px 12px;border:1px solid rgba(129,145,224,.38);border-radius:12px;background:rgba(18,28,46,.9);color:#eef2ff;box-shadow:inset 0 0 0 1px rgba(108,121,177,.14)}
+input::placeholder{color:#8c97b5;opacity:1}
+.password-wrap{position:relative}.password-wrap input{padding-right:42px;background:rgba(18,28,46,.92);border-color:#44577f;border-radius:12px;color:#eef2ff;box-shadow:0 0 0 1px rgba(92,104,155,.24), inset 0 0 0 1px rgba(96,108,167,.12)}.password-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(28,37,58,.96);color:#dfe4ff;display:grid;place-items:center;padding:0;line-height:1;transition:all .2s ease}.password-toggle:hover{background:rgba(79,70,229,.22);border-color:rgba(139,150,255,.75);color:#fff}.password-toggle svg{width:13px;height:13px;display:block}.password-toggle:focus-visible{outline:2px solid #7c8cff;outline-offset:2px}
+label{font-size:10.5px;font-weight:700;color:#a7afcf;letter-spacing:.14em;text-transform:uppercase;display:block;margin:10px 0 6px}
+.prod{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.prod:last-child{border:0}
+.product-details{min-width:0;flex:1}
+.product-actions{display:flex;align-items:center;gap:6px;margin-left:12px}
+.product-actions .btn{padding:7px 10px;font-size:11px}
+.btn.danger-ghost{background:var(--redS);color:var(--red);border:1px solid transparent}
+.btn.danger-ghost:hover{border-color:currentColor}
+.thumb{width:40px;height:40px;border-radius:10px;background:var(--priS);display:grid;place-items:center;font-size:18px}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{width:26px;height:26px;border-radius:8px;border:1px solid var(--line);font-weight:700}
+.tog{width:42px;height:24px;border-radius:99px;background:var(--line);position:relative;transition:.2s}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.tog.on{background:var(--pri)}.tog.on::after{left:21px}
+.login{padding:40px 26px;display:flex;flex-direction:column;justify-content:center;height:100%;overflow-y:auto}
+.hex{width:76px;height:76px;margin:0 auto 6px;background:var(--dark);clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);display:grid;place-items:center;color:#fff;font-size:30px;font-weight:800}
+.toast{position:absolute;left:16px;right:16px;bottom:78px;background:var(--dark);color:#fff;padding:10px 14px;border-radius:10px;font-weight:600;transform:translateY(20px);opacity:0;transition:.25s;pointer-events:none}
+.toast.show{transform:none;opacity:1}
+.overlay{position:absolute;inset:0;background:var(--bg);z-index:5;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+svg text{fill:var(--mut);font-size:9px}
+body{display:block;min-height:100%;background:var(--bg);color:var(--ink)}
+#app{width:100%;max-width:none;height:100%;max-height:none;min-height:100vh;background:var(--bg);border-radius:0;box-shadow:none}
+#app.auth-page{display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at top left,#e4e7ff 0,transparent 45%),var(--bg)}
+.auth-page .login{width:min(100%,460px);height:auto;max-height:calc(100vh - 48px);padding:36px;background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:0 22px 70px rgba(20,28,60,.12)}
+.auth-page .hex{background:var(--pri);border-radius:18px;clip-path:none;width:58px;height:58px;font-size:24px}
+.auth-page .login h1{color:var(--ink)}
+.auth-page .card{box-shadow:none}
+.auth-page input:not([type=checkbox]){background:var(--bg);border-color:var(--line);color:var(--ink);box-shadow:none}
+.auth-page input::placeholder{color:var(--mut)}
+.auth-page label{color:var(--mut);letter-spacing:.08em}
+.auth-page .password-wrap input{background:var(--bg);border-color:var(--line);color:var(--ink);box-shadow:none}
+#app.workspace{display:grid;grid-template-areas:"sidebar content";grid-template-columns:248px minmax(0,1fr);grid-template-rows:minmax(0,1fr);height:100vh;height:100dvh;min-height:480px;overflow:hidden;background:var(--bg)}
+.sidebar{grid-area:sidebar;z-index:3;display:flex;flex-direction:column;min-width:0;background:#151b31;color:#eef0f8}
+.brand{display:flex;align-items:center;gap:11px;padding:22px 20px 30px;color:#fff;text-decoration:none}
+.brand-mark{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--pri);color:#fff;font-weight:800;font-size:19px}
+.brand-name{font-size:15px;font-weight:800;letter-spacing:.08em}
+.brand-caption{margin-top:3px;color:#98a2c0;font-size:9px;letter-spacing:.12em}
+.nav-caption{padding:0 20px 10px;color:#818ba5;font-size:10px;font-weight:700;letter-spacing:.12em}
+.workspace-nav{display:flex;flex-direction:column;gap:5px;padding:0 12px;background:transparent;border:0}
+.workspace-nav button{width:100%;min-height:44px;flex:0 0 auto;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;padding:0 12px;border-radius:9px;color:#aab2ca;text-align:left;font-size:13px;font-weight:500}
+.workspace-nav button.on{background:rgba(112,103,255,.22);color:#fff;font-weight:700}
+.workspace-nav button:hover:not(.on){background:rgba(255,255,255,.07);color:#fff}
+.workspace-nav svg{width:19px;height:19px;flex:none}
+.sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,.09)}
+.sidebar-footer b{display:block;color:#e8eaf3;font-size:12px}
+.sidebar-footer span{display:block;margin-top:4px;color:#98a2c0;font-size:11px}
+.app-content{grid-area:content;display:grid;grid-template-rows:auto minmax(0,1fr);min-width:0;min-height:0}
+.app-header{position:relative;z-index:1;display:flex;align-items:center;gap:14px;min-height:76px;padding:12px 24px;background:var(--card);border-bottom:1px solid var(--line)}
+.page-heading{min-width:0}
+.app-header .eyebrow{display:block;color:var(--mut);font-size:11px}
+.app-header #ttl{display:block;margin-top:3px;font-size:18px;font-weight:700;line-height:1.25}
+.header-actions{display:flex;align-items:center;gap:16px}
+.account-pill{display:flex;align-items:center;gap:10px}
+.account-avatar{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:var(--priS);color:var(--pri);font-size:12px;font-weight:800}
+.account-copy{min-width:0}
+.account-copy b,.account-copy small{display:block;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.account-copy b{font-size:12px}
+.account-copy small{margin-top:3px;color:var(--mut);font-size:10px}
+.app-header #out{padding:8px 12px}
+.app-content>main{width:100%;max-width:1280px;min-width:0;min-height:0;justify-self:center;overflow-y:auto;padding:28px clamp(16px,3vw,40px) 40px}
+.workspace-nav button.on{background:rgba(112,103,255,.22)}
+.workspace-nav svg{width:19px;height:19px}
+.workspace .card{border-radius:16px;box-shadow:0 2px 8px rgba(25,35,70,.035)}
+.workspace .h{font-size:16px;margin-top:20px}
+.workspace .big{font-size:30px}
+.workspace .btn{border-radius:11px}
+.workspace input,.workspace select{background:var(--card);border-color:var(--line);color:var(--ink);box-shadow:none}
+.workspace input::placeholder{color:var(--mut)}
+.forecast-date-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.forecast-date-controls label{margin:0 0 6px}
+.forecast-date-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.forecast-range-buttons{display:flex;gap:6px}
+.forecast-range-buttons .chip{padding:7px 10px}
+.forecast-chart{width:100%;overflow:hidden}
+.forecast-chart svg{display:block;width:100%;height:auto}
+@media(max-width:480px){.forecast-date-actions{align-items:stretch}.forecast-date-actions>.btn{flex:1}}
+.workspace label{color:var(--mut);letter-spacing:.08em}
+.workspace .chip{padding:8px 13px}
+.workspace .toast{z-index:10}
+@media(min-width:701px){
+  .workspace{grid-template-columns:248px minmax(0,1fr)}
+  .app-content>main{padding-top:32px}
+  .workspace .grid2{gap:14px}
+  .workspace .card{padding:16px}
+  .workspace .prod{padding:13px 0}
+  .workspace .h{margin-top:24px}
+  .workspace .alert{padding:16px}
+  .workspace .alert .it{padding:11px 13px}
+}
+@media(min-width:1100px){
+  .workspace{grid-template-columns:264px minmax(0,1fr)}
+  .brand{padding:26px 22px 34px}
+  .app-content>main{padding-top:38px}
+}
+@media(max-width:480px){
+  .auth-page{padding:14px}
+  .auth-page .login{padding:28px 20px}
+  .app-header{min-height:64px;padding:10px 14px}
+  .app-header #ttl{font-size:16px}
+  .account-pill{display:none}
+  .app-content>main{padding:16px 14px 24px}
+  .workspace .grid2{gap:8px}
+  .workspace .card{padding:11px}
+}
+@media(max-width:700px){
+  #app.workspace{grid-template-areas:"content" "sidebar";grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+  .sidebar{position:fixed;right:0;bottom:0;left:0;height:auto;padding-bottom:env(safe-area-inset-bottom,0px);background:var(--card);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(20,28,60,.07)}
+  .brand,.nav-caption,.sidebar-footer{display:none}
+  .workspace-nav{flex-direction:row;justify-content:space-around;gap:0;padding:6px 5px;background:var(--card)}
+  .workspace-nav button{width:auto;min-width:0;min-height:52px;flex:1;flex-direction:column;justify-content:center;gap:4px;padding:5px 2px;border-radius:9px;font-size:9px}
+  .workspace-nav button.on{background:var(--priS);color:var(--pri)}
+  .workspace-nav svg{width:19px;height:19px}
+  .app-content>main{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+}
+</style></head>
+<body><div id="app"></div>
+<script src="api-config.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const ic={Dashboard:'<path d="M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z"/>',Inventory:'<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',Sales:'<path d="M3 3h2l2.5 12h11L21 7H6"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/>',Forecast:'<path d="M3 17l6-6 4 4 8-9M15 6h6v6"/>',Restock:'<path d="M1 6h13v10H1zM14 10h4l4 3v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>'};
+const svg=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ic[n]}</svg>`;
+const eyeIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const eyeSlashIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.58 10.58A2 2 0 0 0 13.42 13.42"/><path d="M9.88 5.06A10.94 10.94 0 0 1 12 5c6.5 0 10 7 10 7a18.72 18.72 0 0 1-4.3 5.39M6.61 6.61A18.72 18.72 0 0 0 2 12s3.5 7 10 7a10.94 10.94 0 0 0 5.41-1.46"/></svg>`;
+const moneyFormatter=new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'});
+const money=n=>moneyFormatter.format(n);
+const S={tab:'Dashboard',filter:'All',q:'',cart:[],autopilot:true,sold:0,inboundUnits:0,unitsSold:0,salesCount:0,salesHistory:[],productSalesHistory:[],forecastRangeStart:'',forecastRangeEnd:'',
+products:[],
+pos:[]};
+let activeAccount=null;
+const AUTH_KEY='inventify.authToken';
+const WORKSPACE_KEY='inventify.workspace';
+let workspaceSaveQueue=Promise.resolve();
+function getToken(){return localStorage.getItem(AUTH_KEY) || ''}
+function setToken(token){if(token){localStorage.setItem(AUTH_KEY, token)}else{localStorage.removeItem(AUTH_KEY)}}
+function uniqueRestockOrders(orders){
+  const seenIds=new Set();
+  return orders.filter(order=>{
+    if(!order?.id||seenIds.has(order.id))return false;
+    seenIds.add(order.id);
+    return true;
+  });
+}
+function resetWorkspace(){
+  S.tab='Dashboard';S.filter='All';S.q='';S.cart=[];S.autopilot=true;S.sold=0;S.inboundUnits=0;S.unitsSold=0;S.salesCount=0;S.salesHistory=[];S.productSalesHistory=[];S.forecastRangeStart='';S.forecastRangeEnd='';S.products=[];S.pos=[];
+}
+function workspaceSnapshot(){return {products:S.products,pos:S.pos,sold:S.sold,inboundUnits:S.inboundUnits,unitsSold:S.unitsSold,salesCount:S.salesCount,salesHistory:S.salesHistory,productSalesHistory:S.productSalesHistory,autopilot:S.autopilot}}
+function applyWorkspace(saved){
+  resetWorkspace();
+  if(!saved||typeof saved!=='object'||Array.isArray(saved))return false;
+  const savedOrders=Array.isArray(saved.pos)?saved.pos:[];
+  S.products=Array.isArray(saved.products)?saved.products:[];
+  S.pos=uniqueRestockOrders(savedOrders).map(order=>{
+    const product=S.products.find(item=>item.sku===order.sku||item.name===order.name);
+    return !order.sku&&product?{...order,sku:product.sku}:order;
+  });
+  S.sold=Number.isFinite(saved.sold)?saved.sold:0;
+  S.inboundUnits=Number.isFinite(saved.inboundUnits)?saved.inboundUnits:0;
+  S.unitsSold=Number.isFinite(saved.unitsSold)?saved.unitsSold:0;
+  S.salesCount=Number.isFinite(saved.salesCount)?saved.salesCount:0;
+  S.salesHistory=Array.isArray(saved.salesHistory)?saved.salesHistory.filter(entry=>entry&&/^\d{4}-\d{2}-\d{2}$/.test(entry.date)&&Number.isFinite(entry.units)&&entry.units>0):[];
+  S.productSalesHistory=Array.isArray(saved.productSalesHistory)?saved.productSalesHistory.filter(entry=>entry&&/^\d{4}-\d{2}-\d{2}$/.test(entry.date)&&typeof entry.sku==='string'&&entry.sku&&typeof entry.name==='string'&&Number.isInteger(entry.units)&&entry.units>0&&Number.isFinite(entry.revenue)&&entry.revenue>=0):[];
+  S.autopilot=typeof saved.autopilot==='boolean'?saved.autopilot:true;
+  return JSON.stringify(S.pos)!==JSON.stringify(savedOrders);
+}
+async function loadWorkspace(user){
+  activeAccount=user;
+  const data=await apiRequest('/api/workspace');
+  let saved=data.workspace;
+  let migratingLocalWorkspace=false;
+  if(saved===null){
+    try{
+      saved=JSON.parse(localStorage.getItem(`${WORKSPACE_KEY}.${encodeURIComponent(user.id)}`) || 'null');
+      migratingLocalWorkspace=!!saved;
+    }catch(error){
+      toast('Unable to read saved workspace on this device');
+      saved=null;
+    }
+  }
+  const changed=applyWorkspace(saved);
+  const snapshot=workspaceSnapshot();
+  try{
+    localStorage.setItem(`${WORKSPACE_KEY}.${encodeURIComponent(user.id)}`,JSON.stringify(snapshot));
+  }catch(error){
+    toast('Unable to cache this account\'s workspace on this device');
+  }
+  if(migratingLocalWorkspace||changed){
+    await apiRequest('/api/workspace',snapshot,{method:'PUT'});
+  }
+}
+function saveWorkspace(){
+  if(!activeAccount)return;
+  const snapshot=workspaceSnapshot();
+  const userId=activeAccount.id;
+  const token=getToken();
+  try{
+    localStorage.setItem(`${WORKSPACE_KEY}.${encodeURIComponent(userId)}`,JSON.stringify(snapshot));
+  }catch(error){
+    toast('Unable to cache this account\'s workspace on this device');
+  }
+  workspaceSaveQueue=workspaceSaveQueue.then(()=>apiRequest('/api/workspace',snapshot,{method:'PUT',headers:{Authorization:`Bearer ${token}`}})).catch(error=>{
+    toast(error.message || 'Unable to save this account\'s workspace to the server');
+  });
+}
+async function apiRequest(endpoint, payload, options={}){
+  const configuredApiBase = String(window.INVENTIFY_API_BASE_URL || '').trim().replace(/\/+$/, '');
+  const apiBase = configuredApiBase || ((window.location.protocol === 'file:') ? 'http://localhost:3000' : '');
+  const url = `${apiBase}${endpoint}`;
+  const headers={'Content-Type':'application/json', ...(options.headers || {})};
+  const token=getToken();
+  if(token){headers.Authorization=`Bearer ${token}`;}
+  if(options.headers?.Authorization)headers.Authorization=options.headers.Authorization;
+  const requestOptions={...options,headers};
+  if(payload){requestOptions.method=options.method || 'POST';requestOptions.body=JSON.stringify(payload)}
+  let response;
+  try{
+    response=await fetch(url, requestOptions);
+  }catch(error){
+    throw new Error(`Unable to reach the Inventify API at ${apiBase || window.location.origin}. Check the deployed API URL and backend service.`);
+  }
+  const contentType=response.headers.get('content-type')||'';
+  if(!contentType.includes('application/json')){
+    throw new Error('The API did not return JSON. If the website is hosted as a Render Static Site, set INVENTIFY_API_BASE_URL in api-config.js to your Render Node Web Service URL.');
+  }
+  const data=await response.json();
+  if(!response.ok) throw new Error(data.message || 'Request failed');
+  return data;
+}
+const P=sku=>S.products.find(p=>p.sku===sku);
+const status=p=>p.stock===0?['Out of stock','r']:p.stock<p.min?['Critical low','r']:['In stock','g'];
+function syncRestockQueue(){
+  const existingCustomOrders = S.pos.filter(order => !order.generated).map(order=>{
+    const product=S.products.find(item=>item.sku===order.sku||item.name===order.name);
+    return !order.sku&&product?{...order,sku:product.sku}:order;
+  });
+  const orderedProductSkus=new Set(existingCustomOrders.filter(order=>['urgent','transit','sent'].includes(order.st)&&order.sku).map(order=>order.sku));
+  const activeUrgent = [];
+  S.products.forEach((product, index) => {
+    const shortage = Math.max(product.min - product.stock, 0);
+    if (shortage > 0 && !orderedProductSkus.has(product.sku)) {
+      activeUrgent.push({
+        id: `PO-${(product.sku || 'SKU').replace(/[^a-zA-Z0-9]/g, '').slice(0, 5).toUpperCase() || 'REQ'}-${index + 1}`,
+        sku: product.sku,
+        name: product.name,
+        qty: Math.max(shortage || product.min, 1),
+        unit: product.unit || 'pcs',
+        sup: ['Apex Tech Global', 'PackPro Supply', 'Northwind Industrial'][index % 3],
+        lead: 3 + (index % 5),
+        cost: Math.max(product.cost || 0, 1) * Math.max(shortage || product.min, 1),
+        st: 'urgent',
+        stock: product.stock,
+        generated: true
+      });
+    }
+  });
+
+  const customUrgent = existingCustomOrders.filter(p => p.st === 'urgent');
+  const keepers = existingCustomOrders.filter(p => p.st === 'transit' || p.st === 'sent');
+
+  S.pos = uniqueRestockOrders([...activeUrgent, ...customUrgent, ...keepers])
+    .slice(0, 20);
+}
+
+function createRestockOrderId(){
+  let id;
+  do{
+    id=`PO-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
+  }while(S.pos.some(order=>order.id===id));
+  return id;
+}
+
+function localDateKey(date){
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+function calendarDayNumber(dateKey){
+  const [year,month,day]=dateKey.split('-').map(Number);
+  return Date.UTC(year,month-1,day)/86400000;
+}
+function dateKeyFromDayNumber(dayNumber){
+  return new Date(dayNumber*86400000).toISOString().slice(0,10);
+}
+function getDailySales(){
+  const dailySales=new Map();
+  S.salesHistory.forEach(entry=>dailySales.set(entry.date,(dailySales.get(entry.date)||0)+entry.units));
+  return dailySales;
+}
+function getProductSalesRanking(start,end){
+  const rankedBySku=new Map();
+  S.productSalesHistory.forEach(entry=>{
+    if(entry.date<start||entry.date>end)return;
+    const product=rankedBySku.get(entry.sku)||{sku:entry.sku,name:entry.name,units:0,revenue:0};
+    product.units+=entry.units;
+    product.revenue+=entry.revenue;
+    rankedBySku.set(entry.sku,product);
+  });
+  return [...rankedBySku.values()].sort((a,b)=>b.units-a.units||b.revenue-a.revenue||a.name.localeCompare(b.name));
+}
+function getForecastDateRange(){
+  const todayKey=localDateKey(new Date());
+  const end=S.forecastRangeEnd||todayKey;
+  return {start:S.forecastRangeStart||dateKeyFromDayNumber(calendarDayNumber(end)-29),end};
+}
+function getDemandSnapshot(){
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const todayKey=localDateKey(today);
+  const firstSaleDate=S.salesHistory.map(entry=>entry.date).sort()[0];
+  const daysTracked=firstSaleDate?Math.min(7,Math.max(0,calendarDayNumber(todayKey)-calendarDayNumber(firstSaleDate)+1)):0;
+  const dailySales=getDailySales();
+  const history=Array.from({length:7},(_,index)=>{
+    const date=new Date(today);
+    date.setDate(today.getDate()-(6-index));
+    return dailySales.get(localDateKey(date))||0;
+  });
+  const averagePerDay=history.reduce((total,units)=>total+units,0)/history.length;
+  const ready=daysTracked>=7;
+  const forecast=ready?Array(6).fill(Math.round(averagePerDay)):[];
+  const previousAverage=history.slice(0,4).reduce((total,units)=>total+units,0)/4;
+  const recentAverage=history.slice(-3).reduce((total,units)=>total+units,0)/3;
+  const growth=previousAverage?((recentAverage-previousAverage)/previousAverage)*100:0;
+  return {history,forecast,averagePerDay,daysTracked,ready,growth:Number.isFinite(growth)?growth:0};
+}
+function toast(m){const t=$('.toast');t.textContent=m;t.classList.add('show');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('show'),1800)}
+function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+function bindPasswordToggle(inputSelector, buttonSelector) {
+  const input = document.querySelector(inputSelector);
+  const button = document.querySelector(buttonSelector);
+  if (!input || !button) return;
+
+  const syncButtonState = () => {
+    const isVisible = input.type === 'text';
+    button.innerHTML = isVisible ? eyeIcon : eyeSlashIcon;
+    button.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
+  };
+
+  button.addEventListener('click', () => {
+    input.type = input.type === 'password' ? 'text' : 'password';
+    syncButtonState();
+  });
+
+  syncButtonState();
+}
+
+async function login(mode='login'){ $('#app').className='auth-page';$('#app').innerHTML=`<div class="login"><div class="hex">▣</div>
+<h1 style="text-align:center;letter-spacing:.12em;font-size:20px;margin-bottom:22px">INVENTIFY</h1>
+${mode==='create'?`<div class="card" style="padding:16px 14px; margin-bottom:14px">
+<label for="biz">BUSINESS NAME</label><input id="biz" placeholder="Acme Warehouse LLC" autocomplete="organization">
+<label for="owner">FULL NAME</label><input id="owner" placeholder="Priya Shah" autocomplete="name">
+<label for="reg-email">BUSINESS EMAIL</label><input id="reg-email" type="email" placeholder="owner@company.com" autocomplete="email">
+<label for="recovery-email">RECOVERY GMAIL</label><input id="recovery-email" type="email" placeholder="you@gmail.com" autocomplete="email">
+<button class="btn ghost full" id="send-signup-code" type="button" style="margin-top:8px">Send verification code</button>
+<div id="signup-verification-fields" hidden>
+<label for="signup-verification-code">GMAIL VERIFICATION CODE</label><input id="signup-verification-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter the code sent to your Gmail">
+<button class="btn ghost full" id="verify-signup-email" type="button" style="margin-top:8px">Verify Gmail</button>
+<p id="signup-verification-status" class="mut" style="margin-top:8px" aria-live="polite"></p>
+</div>
+<label for="reg-pass">PASSWORD</label><div class="password-wrap"><input id="reg-pass" type="password" placeholder="At least 6 characters" autocomplete="new-password"><button type="button" class="password-toggle" id="toggle-reg-pass" aria-label="Show password">${eyeIcon}</button></div>
+<label for="reg-pass-2">CONFIRM PASSWORD</label><div class="password-wrap"><input id="reg-pass-2" type="password" placeholder="Re-enter password" autocomplete="new-password"><button type="button" class="password-toggle" id="toggle-reg-pass-2" aria-label="Show password">${eyeIcon}</button></div>
+<button class="btn full" id="register" style="margin-top:10px" disabled>Create Account</button>
+<p class="mut" style="text-align:center;margin-top:14px">Already have an account?<br><a href="#" style="color:var(--pri);font-weight:700;text-decoration:none" id="back-login">Sign in</a></p>
+</div>`:mode==='forgot'?`<div>
+<label for="reset-email">BUSINESS EMAIL</label><input id="reset-email" type="email" placeholder="name@business.com" autocomplete="username">
+<label for="reset-gmail">RECOVERY GMAIL</label><input id="reset-gmail" type="email" placeholder="you@gmail.com" autocomplete="email">
+<button class="btn full" id="send-reset-code" style="margin-top:14px">Send recovery code</button>
+<div id="reset-confirm-fields" hidden>
+<label for="reset-code">SIX-DIGIT CODE</label><input id="reset-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter the code from Gmail">
+<label for="reset-password">NEW PASSWORD</label><input id="reset-password" type="password" autocomplete="new-password" placeholder="At least 6 characters">
+<button class="btn full" id="reset-password-submit" style="margin-top:14px">Reset password</button>
+</div>
+<p class="mut" style="text-align:center;margin-top:16px"><a href="#" style="color:var(--pri);font-weight:700;text-decoration:none" id="back-login">Back to sign in</a></p>
+</div>`:`<div>
+<label for="em">BUSINESS EMAIL</label><input id="em" placeholder="name@business.com" autocomplete="username">
+<label for="pw">SECURITY PASSWORD</label><div class="password-wrap"><input id="pw" type="password" placeholder="Enter your password" autocomplete="current-password"><button type="button" class="password-toggle" id="toggle-login-password" aria-label="Show password">${eyeIcon}</button></div>
+<p style="text-align:right;margin-top:8px"><a href="#" style="color:var(--pri);font-weight:700;text-decoration:none" id="forgot-password">Forgot password?</a></p>
+<div class="row between" style="margin:12px 0"><label class="row" style="margin:0;font-weight:500"><input type="checkbox" checked style="width:auto"> Remember this device</label><span class="tag g">SSL Active</span></div>
+<button class="btn full" id="go">Sign in to Workspace</button>
+<p class="mut" style="text-align:center;margin-top:16px">New business owner or warehouse supervisor?<br><a href="#" style="color:var(--pri);font-weight:700;text-decoration:none" id="new">Create New Account</a></p>
+</div>`}
+</div><div class="toast"></div>`;
+if(mode==='login'){
+  bindPasswordToggle('#pw', '#toggle-login-password');
+  $('#go').onclick=async()=>{
+    const email=$('#em').value.trim().toLowerCase();
+    const password=$('#pw').value;
+    if(!email||!password) return toast('Enter your email and password to sign in');
+    try{
+      const data=await apiRequest('/api/login',{email,password});
+      setToken(data.token);
+      await loadWorkspace(data.user);
+      shell();
+    }catch(error){
+      setToken('');
+      activeAccount=null;
+      resetWorkspace();
+      toast(error.message || 'Unable to sign in');
+    }
+  };
+  $('#new').onclick=e=>{e.preventDefault();login('create')};
+  $('#forgot-password').onclick=e=>{e.preventDefault();login('forgot')};
+} else if(mode==='forgot'){
+  $('#send-reset-code').onclick=async()=>{
+    const email=$('#reset-email').value.trim().toLowerCase();
+    const recoveryEmail=$('#reset-gmail').value.trim().toLowerCase();
+    if(!email||!recoveryEmail) return toast('Enter your account email and recovery Gmail');
+    try{
+      const data=await apiRequest('/api/password-reset/request',{email,recoveryEmail});
+      $('#reset-confirm-fields').hidden=false;
+      toast(data.message || 'Check your Gmail for the recovery code');
+    }catch(error){
+      toast(error.message || 'Unable to send recovery code');
+    }
+  };
+  $('#reset-password-submit').onclick=async()=>{
+    const email=$('#reset-email').value.trim().toLowerCase();
+    const recoveryEmail=$('#reset-gmail').value.trim().toLowerCase();
+    const code=$('#reset-code').value.trim();
+    const newPassword=$('#reset-password').value;
+    if(!code||!newPassword) return toast('Enter the recovery code and your new password');
+    if(newPassword.length<6) return toast('Password must be at least 6 characters');
+    try{
+      const data=await apiRequest('/api/password-reset/confirm',{email,recoveryEmail,code,newPassword});
+      login();
+      toast(data.message || 'Password updated. You can now sign in.');
+    }catch(error){
+      toast(error.message || 'Unable to reset password');
+    }
+  };
+  $('#back-login').onclick=e=>{e.preventDefault();login();};
+} else {
+  let signupVerificationToken='';
+  bindPasswordToggle('#reg-pass', '#toggle-reg-pass');
+  bindPasswordToggle('#reg-pass-2', '#toggle-reg-pass-2');
+
+  $('#recovery-email').addEventListener('input',()=>{
+    signupVerificationToken='';
+    $('#register').disabled=true;
+    $('#signup-verification-status').textContent='';
+  });
+
+  $('#send-signup-code').onclick=async()=>{
+    const recoveryEmail=$('#recovery-email').value.trim().toLowerCase();
+    if(!/^[^\s@]+@(?:gmail\.com|googlemail\.com)$/i.test(recoveryEmail)) return toast('Use a valid Gmail address for verification');
+    signupVerificationToken='';
+    $('#register').disabled=true;
+    try{
+      const data=await apiRequest('/api/signup/email-verification/request',{recoveryEmail});
+      $('#signup-verification-fields').hidden=false;
+      $('#signup-verification-status').textContent='';
+      toast(data.message || 'Check your Gmail for the verification code');
+    }catch(error){
+      toast(error.message || 'Unable to send verification code');
+    }
+  };
+
+  $('#verify-signup-email').onclick=async()=>{
+    const recoveryEmail=$('#recovery-email').value.trim().toLowerCase();
+    const code=$('#signup-verification-code').value.trim();
+    if(!/^[^\s@]+@(?:gmail\.com|googlemail\.com)$/i.test(recoveryEmail)) return toast('Use a valid Gmail address for verification');
+    if(!/^\d{6}$/.test(code)) return toast('Enter the six-digit verification code');
+    try{
+      const data=await apiRequest('/api/signup/email-verification/confirm',{recoveryEmail,code});
+      signupVerificationToken=data.verificationToken;
+      $('#register').disabled=false;
+      $('#signup-verification-status').textContent='Gmail verified.';
+      toast(data.message || 'Gmail address verified');
+    }catch(error){
+      signupVerificationToken='';
+      $('#register').disabled=true;
+      toast(error.message || 'Unable to verify Gmail address');
+    }
+  };
+
+  $('#register').onclick=async()=>{
+    const business=$('#biz').value.trim();
+    const fullName=$('#owner').value.trim();
+    const email=$('#reg-email').value.trim().toLowerCase();
+    const recoveryEmail=$('#recovery-email').value.trim().toLowerCase();
+    const password=$('#reg-pass').value;
+    const passwordConfirm=$('#reg-pass-2').value;
+    if(!business||!fullName||!email||!recoveryEmail||!password||!passwordConfirm) return toast('Please complete all signup fields');
+    if(!/^\S+@\S+\.\S+$/.test(email)) return toast('Use a valid email address');
+    if(!/^[^\s@]+@(?:gmail\.com|googlemail\.com)$/i.test(recoveryEmail)) return toast('Use a valid Gmail address for password recovery');
+    if(!signupVerificationToken) return toast('Verify your Gmail address before creating your account');
+    if(password.length<6) return toast('Password must be at least 6 characters');
+    if(password!==passwordConfirm) return toast('Passwords do not match');
+    try{
+      const data=await apiRequest('/api/signup',{businessName:business,fullName,email,recoveryEmail,password,verificationToken:signupVerificationToken});
+      setToken(data.token);
+      await loadWorkspace(data.user);
+      toast('Account created successfully');
+      setTimeout(()=>shell(),500);
+    }catch(error){
+      setToken('');
+      activeAccount=null;
+      resetWorkspace();
+      toast(error.message || 'Unable to create account');
+    }
+  };
+  $('#back-login').onclick=e=>{e.preventDefault();login();};
+}}
+
+function shell(){$('#app').className='workspace';$('#app').innerHTML=`<aside class="sidebar"><a class="brand" href="#" aria-label="Inventify home"><span class="brand-mark">▣</span><span><span class="brand-name">INVENTIFY</span><span class="brand-caption">INVENTORY MANAGEMENT</span></span></a><div class="nav-caption">WORKSPACE</div><nav class="workspace-nav" aria-label="Main navigation">${Object.keys(ic).map(n=>`<button data-t="${n}">${svg(n)}<span>${n}</span></button>`).join('')}</nav><div class="sidebar-footer"><b>Inventory workspace</b><span>Keep your business in sync</span></div></aside><section class="app-content"><header class="app-header"><div class="page-heading"><small class="eyebrow">Smart Inventory &amp; Sales</small><b id="ttl"></b></div><span class="sp"></span><div class="header-actions"><div class="account-pill"><span class="account-avatar" id="account-avatar"></span><span class="account-copy"><b id="account-name"></b><small id="account-business"></small></span></div><button aria-label="Sign out" id="out" class="tag">Sign out</button></div></header><main id="v"></main></section><div class="toast"></div>`;
+const accountName=activeAccount?.fullName||activeAccount?.businessName||'Workspace owner';
+$('#account-name').textContent=accountName;
+$('#account-business').textContent=activeAccount?.businessName||'Your business';
+$('#account-avatar').textContent=accountName.split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0].toUpperCase()).join('');
+$('#out').onclick=()=>{activeAccount=null;resetWorkspace();setToken('');login()};document.querySelectorAll('.workspace-nav button').forEach(b=>b.onclick=()=>{S.tab=b.dataset.t;render()});render()}
+function render(){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab));
+$('#ttl').textContent={Dashboard:'Dashboard',Inventory:'Inventory & Products',Sales:'Sales Recording & POS',Forecast:'Demand Forecasting',Restock:'Restock Orders & Logistics'}[S.tab];
+$('#v').innerHTML=V[S.tab]();$('#v').scrollTop=0;(B[S.tab]||(()=>{}))()}
+const low=()=>S.products.filter(p=>p.stock<p.min);
+function forecastChart(w=340,h=130){
+  const snapshot = getDemandSnapshot();
+  if(!snapshot.ready){
+    const message=snapshot.daysTracked===0?'Complete a sale to start collecting demand history.':`${snapshot.daysTracked} of 7 calendar days since the first recorded sale.`;
+    return `<div role="status" class="tiny mut" style="min-height:${h}px;display:grid;place-items:center;text-align:center;padding:16px">${message}</div>`;
+  }
+  const allSeries = [...snapshot.history, ...snapshot.forecast];
+  const maxVal = Math.max(1, ...allSeries);
+  const minVal = Math.min(0, ...allSeries);
+  const historyPoints = snapshot.history.map((value,index)=>`${(index/(snapshot.history.length-1))*(w-20)+10},${h-16-((value-minVal)/(Math.max(maxVal-minVal,1)))*(h-30)}`).join(' ');
+  const forecastPoints = snapshot.forecast.map((value,index)=>`${((index+snapshot.history.length)/(snapshot.history.length+snapshot.forecast.length-1))*(w-20)+10},${h-16-((value-minVal)/(Math.max(maxVal-minVal,1)))*(h-30)}`).join(' ');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="Daily units sold and seven-day average estimate"><polyline fill="none" stroke="var(--mut)" stroke-width="2" points="${historyPoints}"/><polyline fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-dasharray="5 3" points="${forecastPoints}"/><text x="10" y="${h-2}">Past</text><text x="${w-66}" y="${h-2}">Estimate</text></svg>`;
+}
+function analystForecastChart(start,end,w=900,h=300){
+  const dailySales=getDailySales();
+  const firstDay=calendarDayNumber(start);
+  const lastDay=calendarDayNumber(end);
+  const actual=Array.from({length:lastDay-firstDay+1},(_,index)=>{
+    const date=dateKeyFromDayNumber(firstDay+index);
+    return {date,value:dailySales.get(date)||0};
+  });
+  const snapshot=getDemandSnapshot();
+  const baseline=actual.slice(-7).reduce((total,point)=>total+point.value,0)/Math.min(actual.length,7);
+  const estimate=snapshot.ready?Array(7).fill(Math.round(baseline)):[];
+  const values=[...actual.map(point=>point.value),...estimate];
+  const maxValue=Math.max(1,...values);
+  const plot={left:54,right:w-14,top:18,bottom:h-38};
+  const plotWidth=plot.right-plot.left;
+  const plotHeight=plot.bottom-plot.top;
+  const x=index=>plot.left+(index/Math.max(values.length-1,1))*plotWidth;
+  const y=value=>plot.bottom-(value/maxValue)*plotHeight;
+  const actualPoints=actual.map((point,index)=>`${x(index)},${y(point.value)}`).join(' ');
+  const estimatePoints=estimate.length
+    ?`${x(actual.length-1)},${y(actual[actual.length-1].value)} ${estimate.map((value,index)=>`${x(actual.length+index)},${y(value)}`).join(' ')}`
+    :'';
+  const ticks=Math.min(4,Math.max(1,Math.floor(maxValue)));
+  const grid=Array.from({length:ticks+1},(_,index)=>{
+    const value=Math.round(maxValue*(ticks-index)/ticks);
+    const tickY=plot.top+(index/ticks)*plotHeight;
+    return `<line x1="${plot.left}" y1="${tickY}" x2="${plot.right}" y2="${tickY}" stroke="var(--line)"/><text x="${plot.left-10}" y="${tickY+4}" text-anchor="end">${value}</text>`;
+  }).join('');
+  const labelIndexes=[...new Set([0,Math.floor((actual.length-1)/2),actual.length-1])];
+  const dateLabels=labelIndexes.map(index=>{
+    const label=actual[index].date.slice(5);
+    return `<text x="${x(index)}" y="${h-12}" text-anchor="${index===0?'start':index===actual.length-1?'end':'middle'}">${label}</text>`;
+  }).join('');
+  const noSales=actual.every(point=>point.value===0);
+  return `<div class="forecast-chart"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Daily units sold from ${start} to ${end}${estimate.length?' with a seven-day estimate':''}">
+${grid}<polyline fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="${actualPoints}"/>
+${estimatePoints?`<polyline fill="none" stroke="var(--amb)" stroke-width="2.5" stroke-dasharray="7 5" stroke-linejoin="round" stroke-linecap="round" points="${estimatePoints}"/>`:''}
+${dateLabels}</svg></div>
+<div class="row tiny" style="gap:16px;margin-top:8px"><span style="color:var(--pri)">● Actual units sold</span>${estimate.length?'<span style="color:var(--amb)">┅ 7-day estimate from selected period</span>':''}</div>
+${noSales?'<div class="tiny mut" role="status" style="margin-top:8px">No sales were recorded in this date range. Your current data snapshot remains available above.</div>':''}
+${!snapshot.ready?`<div class="tiny mut" style="margin-top:8px" role="status">${snapshot.daysTracked?`${snapshot.daysTracked} of 7 calendar days tracked; the estimate will appear when tracking is complete.`:'Complete a sale to start tracking demand.'}</div>`:''}`;
+}
+function productTrend(start,end){
+  const ranked=getProductSalesRanking(start,end);
+  if(!ranked.length){
+    const message=S.productSalesHistory.length
+      ?'No product sales were recorded in this date range.'
+      :'Product rankings start with sales recorded after product-level tracking was added. Earlier sales only contain account-wide totals.';
+    return `<div class="card"><div class="row between"><b>Product sales trend</b><span class="tag">${start} – ${end}</span></div><div class="tiny mut" role="status" style="margin-top:10px">${message}</div></div>`;
+  }
+  const topProducts=ranked.slice(0,5);
+  const highest=topProducts[0].units;
+  return `<div class="card"><div class="row between"><b>Best-selling products</b><span class="tag">${start} – ${end}</span></div><div class="tiny mut" style="margin:6px 0 14px">Ranked by units sold during the selected date range.</div>${topProducts.map((product,index)=>{
+    const share=Math.max(4,Math.round(product.units/highest*100));
+    return `<div style="display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)"><span class="tag ${index===0?'g':''}" style="text-align:center">#${index+1}</span><div style="min-width:0"><b style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(product.name)}</b><div style="height:6px;margin-top:7px;overflow:hidden;border-radius:99px;background:var(--line)"><div style="width:${share}%;height:100%;border-radius:inherit;background:var(--pri)"></div></div></div><div style="text-align:right"><b>${product.units} units</b><div class="tiny mut">${money(product.revenue)}</div></div></div>`;
+  }).join('')}<div class="tiny mut" style="margin-top:10px">${ranked.length} product${ranked.length===1?'':'s'} with sales in this period</div></div>`;
+}
+const prodRow=p=>{const[s,c]=status(p);const thumb = p.image ? `<img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block">` : `<div class="thumb">${p.e || '📦'}</div>`; return `<div class="prod"><div style="width:40px;height:40px;flex:none;border-radius:10px;overflow:hidden;display:grid;place-items:center;background:var(--priS)">${thumb}</div><div class="product-details"><b>${p.name}</b><div class="mut tiny">SKU: ${p.sku} · ${p.loc}</div></div><div class="product-stock" style="text-align:right"><span class="tag ${c}">${s}</span><div class="tiny mut" style="margin-top:3px">${p.stock} units</div></div><div class="product-actions"><button class="btn ghost" data-product-edit="${encodeURIComponent(p.sku)}" aria-label="Edit ${p.name}">Edit</button><button class="btn danger-ghost" data-product-delete="${encodeURIComponent(p.sku)}" aria-label="Delete ${p.name}">Delete</button></div></div>`};
+const V={
+Dashboard:()=>{const l=low(),val=S.products.reduce((total,product)=>total+product.stock*product.cost,0),units=S.products.reduce((total,product)=>total+product.stock,0),snapshot=getDemandSnapshot(),today=localDateKey(new Date()),forecastStart=dateKeyFromDayNumber(calendarDayNumber(today)-6),todayUnits=getDailySales().get(today)||0;if(!S.products.length){return `
+<div class="card" style="padding:18px 16px;background:var(--priS);border-color:rgba(79,70,229,.18)"><div class="tiny mut" style="letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:8px">Business Overview</div>
+<b style="font-size:18px;display:block;margin-bottom:8px">No inventory data yet</b>
+<div class="tiny mut">Add your first product to start tracking stock, sales, and demand forecasting.</div>
+<div style="margin-top:12px"><button class="btn pri" id="add-first-product">Add First Product</button></div></div>
+<div class="card"><div class="tiny mut">TOTAL INVENTORY VALUE</div><div class="big">${money(0)}</div><div class="tiny mut">0 units · 0 Active SKUs</div></div>
+<div class="grid2"><div class="card kpi"><span class="tiny mut">TOTAL SALES</span><b>${money(S.sold)}</b><span class="tiny mut">${S.salesCount} tickets processed</span></div>
+<div class="card kpi"><span class="tiny mut">STOCK FLOW</span><b><span style="color:var(--grn)">+${S.inboundUnits}</span> / <span style="color:var(--red)">-${S.unitsSold}</span></b><span class="tiny mut">Inbound / Sold</span></div></div>`}
+return `
+<div class="alert"><div class="row between"><b style="color:var(--red)">${l.length} Items Require Attention</b><span class="tag r">URGENT</span></div>
+${l.slice(0,2).map(p=>`<div class="it"><div><b>${p.name}</b><div class="tiny mut">SKU: ${p.sku}</div></div><div style="text-align:right"><b style="color:var(--red)">${p.stock} Left</b><div class="tiny mut">Min: ${p.min}</div></div></div>`).join('')}
+<div class="row"><button class="btn red sp" data-go="Restock">Restock Now</button><button class="btn ghost" id="snz">Snooze</button></div></div>
+<div class="row between h" style="margin-top:6px"><span>Telemetry KPIs</span><span class="tiny mut" style="font-weight:400">Refreshed 2m ago</span></div>
+<div class="card"><div class="tiny mut">INVENTORY VALUE (AT COST)</div><div class="big">${money(val)}</div><div class="tiny mut">${units} units · ${S.products.length} Active SKUs</div></div>
+<div class="grid2"><div class="card kpi"><span class="tiny mut">TOTAL SALES</span><b>${money(S.sold)}</b><span class="tiny mut">${S.salesCount} tickets processed</span></div>
+<div class="card kpi"><span class="tiny mut">STOCK FLOW</span><b><span style="color:var(--grn)">+${S.inboundUnits}</span> / <span style="color:var(--red)">-${S.unitsSold}</span></b><span class="tiny mut">Inbound / Sold</span></div></div>
+<div class="card"><div class="row between"><b>Demand Forecasting</b><span class="tag">Sales-based estimate</span></div>
+<div class="grid2" style="margin-top:12px"><div class="card kpi" style="margin:0"><span class="tiny mut">CURRENT 7-DAY AVERAGE</span><b>${snapshot.ready?snapshot.averagePerDay.toFixed(1):'—'}</b><span class="tiny mut">${snapshot.ready?'units sold per day':snapshot.daysTracked===0?'Complete a sale to start tracking.':`${snapshot.daysTracked} of 7 days tracked.`}</span></div><div class="card kpi" style="margin:0"><span class="tiny mut">SOLD TODAY</span><b>${todayUnits}</b><span class="tiny mut">${today} · units</span></div></div>
+<div class="card" style="margin:12px 0 0"><div class="row between"><b>Daily units sold and estimate</b><span class="tag">${forecastStart} – ${today}</span></div><div class="tiny mut" style="margin:6px 0 12px">Actual sales over the last seven days, followed by an estimate when enough history is available.</div>${analystForecastChart(forecastStart,today,900,190)}<div class="row between" style="margin-top:12px"><span class="tiny mut" role="status">${snapshot.ready?'7-day estimate available':snapshot.daysTracked?`${snapshot.daysTracked} of 7 calendar days tracked`:'Complete a sale to start tracking demand'}</span><button class="btn ghost" type="button" data-go="Forecast">View full forecast</button></div></div></div>`},
+Inventory:()=>{const list=S.products.filter(p=>(S.filter==='All'||p.cat===S.filter||(S.filter==='Low Alert'&&p.stock<p.min&&p.stock>0)||(S.filter==='Out of Stock'&&p.stock===0))&&(p.name+p.sku).toLowerCase().includes(S.q.toLowerCase()));
+return `<div class="row"><input id="q" placeholder="Search SKU, item, or bay…" value="${S.q}" aria-label="Search products"><button class="btn pri" id="add" aria-label="Add product">+</button></div>
+<div class="chips">${['All','Low Alert','Out of Stock','Electronics','Consumables','Hardware'].map(c=>`<button class="chip ${S.filter===c?'on':''}" data-f="${c}">${c}</button>`).join('')}</div>
+<div class="grid2"><button class="card" data-act="in"><b>Receive Stock ↓</b><div class="tiny mut">Receive units from a sent purchase order.</div></button><button class="card" data-act="out"><b>Stock Out ↑</b><div class="tiny mut">Manual dispatch, shrinkage audit, damage.</div></button></div>
+<div class="h" style="margin-top:0">Warehouse Telemetry</div><div class="grid2">
+<div class="card kpi"><span class="tiny mut">Active SKUs</span><b>${S.products.length}</b></div><div class="card kpi"><span class="tiny mut">Low Stock</span><b style="color:var(--red)">${S.products.filter(p=>p.stock>0&&p.stock<p.min).length} flagged</b></div>
+<div class="card kpi"><span class="tiny mut">Out of Stock</span><b>${S.products.filter(p=>!p.stock).length}</b></div><div class="card kpi"><span class="tiny mut">Total Units</span><b>${S.products.reduce((a,p)=>a+p.stock,0)}</b></div></div>
+<div class="h">Product Catalog <span class="mut tiny" style="font-weight:400">${list.length} shown</span></div><div class="card" style="padding:2px 12px">${list.map(prodRow).join('')||'<div class="card" style="margin:10px 0;background:var(--priS);border-color:rgba(79,70,229,.18);text-align:center;padding:18px 12px"><b style="display:block;margin-bottom:8px">No products added yet</b><div class="tiny mut">Your business is ready. Add your first product to begin tracking stock and forecast demand.</div><div style="margin-top:12px"><button class="btn pri" id="add-first-product-inline">Add Product</button></div></div>'}</div>`},
+Sales:()=>{const items=S.cart.map(c=>({...P(c.sku),q:c.q})),tot=items.reduce((a,i)=>a+i.q*i.price,0),pr=items.reduce((a,i)=>a+i.q*(i.price-i.cost),0);
+return `<div class="row" style="justify-content:flex-end;margin-bottom:10px"><button class="btn pri" id="scan">Scan</button></div>
+<select aria-label="Customer"><option>Walk-in Customer (Default)</option><option>Trade account</option></select>
+<div class="h">Catalog Quick Tap</div><div class="grid2">${S.products.slice(0,4).map(p=>`<button class="card" data-add="${p.sku}" style="text-align:left;margin:0" ${p.stock?'':'disabled'}><b>${money(p.price)}</b><div>${p.name}</div><div class="tiny mut">${p.sku} · ${p.stock?'In Stock: '+p.stock:'Out'}</div></button>`).join('')}</div>
+<div class="row between h">Active Cart Items <span class="tag">${S.cart.length}</span><button class="tiny" style="color:var(--red)" id="clr">Clear Cart</button></div>
+${items.map(i=>`<div class="card"><div class="row between"><b>${i.name}</b><b>${money(i.q*i.price)}</b></div><div class="tiny mut">${i.sku} · ${money(i.cost)} ea</div><div class="row between" style="margin-top:8px"><div class="qty"><button data-m="${i.sku}" aria-label="Decrease">−</button><b>${i.q}</b><button data-p="${i.sku}" aria-label="Increase">+</button></div><span class="tag g">Profit: +${money(i.q*(i.price-i.cost))}</span></div></div>`).join('')||'<p class="mut" style="padding:8px">Cart is empty. Tap an item above or scan a barcode.</p>'}
+<div class="card row between"><div><div class="tiny mut">Total · profit ${money(pr)}</div><b style="font-size:20px">${money(tot)}</b></div><button class="btn pri" id="pay" ${items.length?'':'disabled'}>Complete Sale</button></div>`},
+Forecast:()=>{
+  const snapshot = getDemandSnapshot();
+  const range=getForecastDateRange();
+  const todayUnits=getDailySales().get(localDateKey(new Date()))||0;
+  const today=localDateKey(new Date());
+  return `<div class="card"><div class="row between"><b>Sales-based demand estimate</b><span class="tag">Live account data</span></div><div class="tiny mut">Uses completed units sold for this account; historical chart dates do not change current sales or inventory.</div></div>
+<div class="grid2"><div class="card kpi"><span class="tiny mut">CURRENT 7-DAY AVERAGE</span><b>${snapshot.ready?snapshot.averagePerDay.toFixed(1):'—'}</b><span class="tiny mut">${snapshot.ready?'units sold per day':snapshot.daysTracked===0?'Complete a sale to start tracking.':`${snapshot.daysTracked} of 7 days tracked.`}</span></div><div class="card kpi"><span class="tiny mut">SOLD TODAY</span><b>${todayUnits}</b><span class="tiny mut">${today} · units</span></div></div>
+<div class="card"><div class="row between"><b>Analyze a date range</b><span class="tag">Current data stays visible</span></div><div class="tiny mut">Choose dates to explore recorded sales. The current snapshot above always reflects today.</div>
+<div class="forecast-date-controls"><div><label for="forecast-start">FROM</label><input id="forecast-start" type="date" value="${range.start}" max="${today}"></div><div><label for="forecast-end">TO</label><input id="forecast-end" type="date" value="${range.end}" max="${today}"></div></div>
+<div class="forecast-date-actions"><div class="forecast-range-buttons" aria-label="Quick date ranges">${[7,30,90].map(days=>`<button class="chip ${calendarDayNumber(range.end)-calendarDayNumber(range.start)+1===days?'on':''}" type="button" data-forecast-days="${days}">${days}D</button>`).join('')}</div><button class="btn pri" type="button" id="forecast-apply">Apply dates</button></div></div>
+<div class="card"><div class="row between"><b>Daily units sold and estimate</b><span class="tag">${range.start} – ${range.end}</span></div><div class="tiny mut" style="margin:6px 0 12px">Actual sales for the selected period, followed by a seven-day average estimate.</div>${analystForecastChart(range.start,range.end)}</div>
+${productTrend(range.start,range.end)}
+<div class="card row"><div class="sp"><b>Restock Autopilot</b> <span class="tag">SMART</span><div class="tiny mut">Auto-draft POs when stock breaches minimums.</div></div><button class="tog ${S.autopilot?'on':''}" id="ap" role="switch" aria-checked="${S.autopilot}" aria-label="Restock autopilot"></button></div>`;
+},
+Restock:()=>{const c=t=>S.pos.filter(p=>p.st===t).length;const urgent = S.pos.filter(p=>p.st==='urgent');const inbound = S.pos.filter(p=>p.st!=='urgent');return `<div class="row between" style="margin-bottom:10px"><div class="sp"></div><button class="btn pri" id="add-restock-order">+ Add Order</button></div>
+<div class="grid2" style="grid-template-columns:repeat(3,1fr)"><div class="card kpi" style="background:var(--redS)"><b style="color:var(--red)">${c('urgent')}</b><span class="tiny mut">Urgent POs</span></div><div class="card kpi"><b>${c('transit')}</b><span class="tiny mut">In Transit</span></div><div class="card kpi"><b>${c('sent')}</b><span class="tiny mut">Sent</span></div></div>
+<div class="h" style="margin-top:0">Demand Forecast POs</div>${urgent.length ? urgent.map(p=>`<div class="card"><div class="row between"><b>${p.name}</b><span class="tag r">${(p.stock ?? 0) === 0 ? 'Stockout' : 'Low stock'}</span></div><div class="tiny mut">${p.id} · ${p.sup}</div><div class="grid2" style="margin:8px 0"><div><span class="tiny mut">Suggested order</span><br><b>+${p.qty} ${p.unit}</b></div><div><span class="tiny mut">Lead time</span><br><b>${p.lead} days</b></div></div><div class="row between"><b style="font-size:18px">${money(p.cost)}</b><div class="row" style="gap:8px"><button class="btn ghost" data-restock-edit="${p.id}">Edit</button><button class="btn pri" data-po="${p.id}">Approve & Send PO</button></div></div></div>`).join('') : '<p class="mut" style="padding:8px">All forecast POs approved.</p>'}
+<div class="h">Active Inbound Shipments</div>${inbound.length ? inbound.map(p=>`<div class="card row between"><div><b>${p.id}</b> <span class="tag">${p.sup}</span><div class="tiny mut">${p.name} · ${p.qty} ${p.unit}</div></div><div class="row" style="gap:8px"><button class="btn ghost tiny" data-restock-edit="${p.id}">Edit</button>${['sent','transit'].includes(p.st)?`<button class="btn pri tiny" data-receive="${p.id}">Receive</button>`:`<span class="tag g">${p.st==='received'?'Received':'In Transit'}</span>`}</div></div>`).join('') : '<p class="mut" style="padding:8px">No inbound shipments currently active.</p>'}`}};
+const B={Inventory(){
+const qField = document.querySelector('#q');
+if (qField) qField.oninput=e=>{S.q=e.target.value;const pos=e.target.selectionStart;render();const q=$('#q');q.focus();q.setSelectionRange(pos,pos)};
+const addBtn = document.querySelector('#add');
+if (addBtn) addBtn.onclick = addProduct;
+const inlineBtn = document.querySelector('#add-first-product-inline');
+if (inlineBtn) inlineBtn.onclick = addProduct;
+document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;render()});
+document.querySelectorAll('[data-product-edit]').forEach(b=>b.onclick=()=>editProduct(decodeURIComponent(b.dataset.productEdit)));
+document.querySelectorAll('[data-product-delete]').forEach(b=>b.onclick=()=>deleteProduct(decodeURIComponent(b.dataset.productDelete)));
+document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>stockMove(b.dataset.act))},
+Dashboard(){
+  const firstBtn = document.querySelector('#add-first-product');
+  if (firstBtn) firstBtn.onclick = addProduct;
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{S.tab=b.dataset.go;render()});
+  const snoozeBtn = document.querySelector('#snz');
+  if (snoozeBtn) snoozeBtn.onclick=()=>toast('Alerts snoozed for 1 hour');
+},
+Sales(){const add=(s,d)=>{const product=P(s);if(!product){toast('Product not found');return false}const c=S.cart.find(x=>x.sku===s);if(d>0&&(c?.q||0)>=product.stock){toast('No more stock available for '+product.name);return false}if(c){c.q=Math.min(product.stock,Math.max(0,c.q+d));if(!c.q)S.cart=S.cart.filter(x=>x!==c)}else if(d>0)S.cart.push({sku:s,q:1});render();return true};
+document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>add(b.dataset.add,1));document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>add(b.dataset.p,1));document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>add(b.dataset.m,-1));
+$('#clr').onclick=()=>{S.cart=[];render()};$('#scan').onclick=()=>openBarcodeScanner(sku=>{if(add(sku,1))toast('Added '+P(sku).name+' to cart')});
+$('#pay').onclick=()=>{let t=0,units=0;const saleDate=localDateKey(new Date());S.cart.forEach(c=>{const p=P(c.sku);p.stock-=c.q;t+=c.q*p.price;units+=c.q;S.unitsSold+=c.q;S.productSalesHistory.push({date:saleDate,sku:p.sku,name:p.name,units:c.q,revenue:c.q*p.price})});S.sold+=t;S.salesCount+=1;S.salesHistory.push({date:saleDate,units});S.cart=[];saveWorkspace();render();toast('Sale completed: '+money(t))}},
+Forecast(){
+  const applyRange=(start,end)=>{
+    const today=localDateKey(new Date());
+    if(!start||!end){toast('Choose both a start and end date');return false}
+    if(start>end){toast('Start date must be on or before end date');return false}
+    if(end>today){toast('End date cannot be in the future');return false}
+    S.forecastRangeStart=start;
+    S.forecastRangeEnd=end;
+    render();
+    return true;
+  };
+  $('#forecast-apply').onclick=()=>applyRange($('#forecast-start').value,$('#forecast-end').value);
+  document.querySelectorAll('[data-forecast-days]').forEach(button=>button.onclick=()=>{
+    const end=$('#forecast-end').value||localDateKey(new Date());
+    const start=dateKeyFromDayNumber(calendarDayNumber(end)-Number(button.dataset.forecastDays)+1);
+    $('#forecast-start').value=start;
+    applyRange(start,end);
+  });
+  $('#ap').onclick=()=>{S.autopilot=!S.autopilot;saveWorkspace();render();toast('Autopilot '+(S.autopilot?'on':'off'))}
+},
+Restock(){
+  const addBtn = document.querySelector('#add-restock-order');
+  if (addBtn) addBtn.onclick = () => openRestockForm();
+
+  document.querySelectorAll('[data-po]').forEach(b=>b.onclick=()=>{const p=S.pos.find(x=>x.id===b.dataset.po); if (!p) return; p.st='sent'; saveWorkspace(); render(); toast(p.id+' sent to '+p.sup)});
+  document.querySelectorAll('[data-receive]').forEach(b=>b.onclick=()=>receiveRestockOrder(b.dataset.receive));
+  document.querySelectorAll('[data-restock-edit]').forEach(b=>b.onclick=()=>{
+    const order = S.pos.find(x => x.id === b.dataset.restockEdit);
+    if (order) openRestockForm(order);
+  });
+}};
+
+function receiveRestockOrder(orderId){
+  const order=S.pos.find(item=>item.id===orderId);
+  if(!order||!['sent','transit'].includes(order.st))return;
+  const product=P(order.sku);
+  if(!product){toast('Edit this order and link it to an inventory product first');return}
+  product.stock+=order.qty;
+  S.inboundUnits+=order.qty;
+  order.st='received';
+  order.generated=false;
+  syncRestockQueue();
+  saveWorkspace();
+  render();
+  toast(`Received ${order.qty} ${order.unit} of ${product.name}`);
+}
+
+function openRestockForm(order = null){
+  const isEdit = !!order;
+  const selectedSku=order?.sku||S.products.find(product=>product.name===order?.name)?.sku||'';
+  const form = `
+    <div class="card">
+      <label for="po-sku">INVENTORY PRODUCT</label>
+      <select id="po-sku"><option value="">Select a product</option>${S.products.map(product=>`<option value="${product.sku}" ${product.sku===selectedSku?'selected':''}>${product.name} · ${product.sku}</option>`).join('')}</select>
+
+      <label for="po-supplier">SUPPLIER</label>
+      <input id="po-supplier" value="${order ? order.sup : ''}" placeholder="Apex Tech Global">
+
+      <div class="grid2">
+        <div>
+          <label for="po-qty">QUANTITY</label>
+          <input id="po-qty" type="number" min="1" value="${order ? order.qty : 1}">
+        </div>
+        <div>
+          <label for="po-unit">UNIT</label>
+          <input id="po-unit" value="${order ? order.unit : 'pcs'}" placeholder="pcs">
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div>
+          <label for="po-lead">LEAD TIME (days)</label>
+          <input id="po-lead" type="number" min="1" value="${order ? order.lead : 3}">
+        </div>
+        <div>
+          <label for="po-status">STATUS</label>
+          <select id="po-status">
+            <option value="urgent" ${order && order.st === 'urgent' ? 'selected' : ''}>Urgent</option>
+            <option value="transit" ${order && order.st === 'transit' ? 'selected' : ''}>In Transit</option>
+            <option value="sent" ${order && order.st === 'sent' ? 'selected' : ''}>Sent</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="po-cost">ESTIMATED COST</label>
+      <input id="po-cost" type="number" min="0" step="0.01" value="${order ? order.cost : 0}">
+    </div>
+  `;
+
+  overlay(isEdit ? 'Edit Restock Order' : 'Add Restock Order', form, (o) => {
+    const sku = o.querySelector('#po-sku').value;
+    const product = P(sku);
+    const supplier = o.querySelector('#po-supplier').value.trim();
+    const qty = Math.max(1, Number(o.querySelector('#po-qty').value) || 1);
+    const unit = o.querySelector('#po-unit').value.trim() || 'pcs';
+    const lead = Math.max(1, Number(o.querySelector('#po-lead').value) || 1);
+    const status = o.querySelector('#po-status').value;
+    const cost = Math.max(0, Number(o.querySelector('#po-cost').value) || 0);
+
+    if (!product || !supplier) {
+      toast('Select an inventory product and enter a supplier');
+      return false;
+    }
+
+    const nextOrder = {
+      id: order ? order.id : createRestockOrderId(),
+      sku,
+      name: product.name,
+      qty,
+      unit,
+      sup: supplier,
+      lead,
+      cost,
+      st: status,
+      stock: order ? (order.stock ?? 0) : 0,
+      generated: false
+    };
+
+    if (isEdit) {
+      const index = S.pos.findIndex(item => item.id === order.id);
+      if (index >= 0) S.pos[index] = { ...S.pos[index], ...nextOrder };
+    } else {
+      S.pos.unshift(nextOrder);
+    }
+
+    syncRestockQueue();
+    saveWorkspace();
+    render();
+    toast(isEdit ? 'Restock order updated' : 'Restock order added');
+    return true;
+  }, isEdit ? 'Save Changes' : 'Add Order');
+}
+
+let barcodeLibraryPromise=null;
+function loadBarcodeLibrary(){
+  if(window.ZXingBrowser)return Promise.resolve(window.ZXingBrowser);
+  if(!barcodeLibraryPromise){
+    barcodeLibraryPromise=new Promise((resolve,reject)=>{
+      const script=document.createElement('script');
+      script.src='/node_modules/@zxing/browser/umd/zxing-browser.min.js';
+      script.onload=()=>window.ZXingBrowser?resolve(window.ZXingBrowser):reject(new Error('Barcode scanner library did not load.'));
+      script.onerror=()=>reject(new Error('Barcode scanner library could not be loaded.'));
+      document.head.appendChild(script);
+    }).catch(error=>{barcodeLibraryPromise=null;throw error});
+  }
+  return barcodeLibraryPromise;
+}
+function openBarcodeScanner(onScan,purpose='sale'){
+const captureForProduct=purpose==='product';
+const o=overlay(captureForProduct?'Scan product barcode':'Scan product barcode',`<div class="card" style="padding:8px"><div style="position:relative;overflow:hidden;border-radius:10px;background:#080d18"><video id="barcode-video" autoplay muted playsinline aria-label="Camera barcode preview" style="display:block;width:100%;max-height:48vh;min-height:220px;object-fit:cover;transform:scale(1);transition:transform .15s"></video><div aria-hidden="true" style="position:absolute;left:12%;right:12%;top:28%;bottom:28%;border:2px solid rgba(124,140,255,.9);border-radius:10px;pointer-events:none"><span style="position:absolute;left:0;right:0;top:50%;border-top:2px solid #f04452"></span></div></div>
+<div class="grid2" style="grid-template-columns:minmax(0,1fr) minmax(110px,.65fr);align-items:end;margin-top:8px"><div><label for="barcode-camera" style="margin-top:0">CAMERA</label><select id="barcode-camera" aria-label="Select camera"><option value="">Finding cameras…</option></select></div><div><label for="barcode-zoom" style="margin-top:0">ZOOM <span id="barcode-zoom-value">2×</span></label><input id="barcode-zoom" type="range" min="1" max="5" step="0.25" value="2" aria-label="Barcode camera zoom"></div></div></div>
+<p id="barcode-status" class="tiny mut" role="status" aria-live="polite" style="margin:8px 2px 14px">Starting camera…</p>
+<label for="barcode-entry">${captureForProduct?'PRODUCT BARCODE':'PRODUCT BARCODE OR SKU'}</label><input id="barcode-entry" type="text" autocomplete="off" placeholder="${captureForProduct?'Scan or enter barcode':'Enter barcode or product SKU'}" aria-describedby="barcode-status">
+<button class="btn ghost" id="barcode-rescan" type="button" hidden>${captureForProduct?'Scan Again':'Scan Next Item'}</button>
+<p class="tiny mut" style="margin:8px 2px">Camera scans automatically. Point it at the barcode (not the room), bring it close until the bars fill the guide, and hold it steady. Avoid glare on shiny packaging. You can also enter the code manually.</p>`,()=>false,captureForProduct?'Use Barcode':'Add to Cart');
+const video=o.querySelector('#barcode-video');
+const status=o.querySelector('#barcode-status');
+const entry=o.querySelector('#barcode-entry');
+const rescanButton=o.querySelector('#barcode-rescan');
+let active=true,paused=false,cameraStream=null,cameraTrack=null,barcodeReader=null,scanControls=null,keyHandler=null,cameraRequestId=0,digitalZoom=2;
+let lastAutoAddedCode='';
+const cameraSelect=o.querySelector('#barcode-camera');
+const zoomInput=o.querySelector('#barcode-zoom');
+const zoomValue=o.querySelector('#barcode-zoom-value');
+video.style.transform='scale(2)';
+zoomInput.oninput=()=>{
+  digitalZoom=Number(zoomInput.value)||1;
+  zoomValue.textContent=`${digitalZoom}×`;
+  video.style.transform=`scale(${digitalZoom})`;
+  const zoomRange=cameraTrack?.getCapabilities?.().zoom;
+  if(zoomRange){
+    const hardwareZoom=Math.min(zoomRange.max,Math.max(zoomRange.min,digitalZoom));
+    cameraTrack.applyConstraints({advanced:[{zoom:hardwareZoom}]}).catch(error=>{
+      console.warn('Camera hardware zoom could not be adjusted.',error);
+    });
+  }
+};
+cameraSelect.onchange=()=>startCamera(cameraSelect.value);
+function cleanup(){
+  if(!active)return;
+  active=false;
+  if(scanControls)scanControls.stop();
+  if(cameraStream)cameraStream.getTracks().forEach(track=>track.stop());
+  cameraTrack=null;
+  video.srcObject=null;
+  if(keyHandler)document.removeEventListener('keydown',keyHandler);
+}
+function handleScannedCode(rawValue,fromCamera=false){
+  const code=String(rawValue||'').trim();
+  if(!code){status.textContent='Scan a barcode or enter a product SKU.';return false}
+  if(fromCamera){
+    if(captureForProduct){
+      entry.value=code;
+      status.textContent=`Barcode detected: ${code}. Adding it to the product form…`;
+      cleanup();
+      o.remove();
+      onScan(code);
+      return true;
+    }
+    const product=S.products.find(item=>String(item.sku||'').trim().toLocaleLowerCase()===code.toLocaleLowerCase());
+    if(!product){
+      status.textContent=`Barcode "${code}" is not in your inventory. Add the product using this code as its SKU, or scan another item.`;
+      return false;
+    }
+    const cartItem=S.cart.find(item=>item.sku===product.sku);
+    if(product.stock<=(cartItem?.q||0)){
+      status.textContent=`${product.name} has no more stock available to add.`;
+      return false;
+    }
+    onScan(product.sku);
+    status.textContent=`Added ${product.name} to the cart. Point the camera at the next item to scan.`;
+    return true;
+  }
+  if(captureForProduct){
+    cleanup();
+    o.remove();
+    onScan(code);
+    return true;
+  }
+  const product=S.products.find(item=>String(item.sku||'').trim().toLocaleLowerCase()===code.toLocaleLowerCase());
+  if(!product){status.textContent=`Barcode "${code}" is not in your inventory. Add the product using this code as its SKU.`;return false}
+  const cartItem=S.cart.find(item=>item.sku===product.sku);
+  if(product.stock<=(cartItem?.q||0)){status.textContent=`${product.name} has no more stock available to add.`;return false}
+  cleanup();
+  o.remove();
+  onScan(product.sku);
+  return true;
+}
+o.querySelector('#x').onclick=()=>{cleanup();o.remove()};
+o.querySelector('#ok').onclick=()=>handleScannedCode(entry.value);
+entry.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();handleScannedCode(entry.value)}});
+rescanButton.onclick=()=>{
+  paused=false;
+  entry.value='';
+  if(scanControls)scanControls.stop();
+  scanControls=null;
+  rescanButton.hidden=true;
+  status.textContent='Scanning live. Place the barcode inside the guide and hold it steady.';
+  startDecoding();
+};
+keyHandler=event=>{if(event.key==='Escape'){cleanup();o.remove()}};
+document.addEventListener('keydown',keyHandler);
+async function startDecoding(){
+  if(!active||!cameraStream||!barcodeReader)return;
+  status.textContent='Scanning live. Place the barcode inside the guide and hold it steady.';
+  try{
+    scanControls=await barcodeReader.decodeFromVideoElement(video,(result,error,controls)=>{
+      if(!active)return;
+      if(result){
+        const code=result.getText().trim();
+        if(code&&code!==lastAutoAddedCode){
+          lastAutoAddedCode=code;
+          entry.value=code;
+          handleScannedCode(code,true);
+        }
+        return;
+      }
+      const errorMessage=String(error?.message||'');
+      const errorKind=error?.getKind?.()||error?.name;
+      const expectedReadMiss=['NotFoundException','ChecksumException','FormatException'].includes(errorKind)
+        ||/No MultiFormat Readers were able to detect the code/i.test(errorMessage);
+      if(error&&!expectedReadMiss){
+        paused=true;
+        controls.stop();
+        status.textContent=`Barcode scanner stopped: ${errorMessage||error.name||'unknown error'}. Select Scan Again to retry.`;
+        rescanButton.hidden=false;
+      }
+    });
+    if(!active)scanControls.stop();
+  }catch(error){
+    if(!active)return;
+    paused=true;
+    status.textContent=`Unable to start barcode decoding: ${error.message||'unknown scanner error'}. Select Scan Again to retry.`;
+    rescanButton.hidden=false;
+  }
+}
+async function startCamera(deviceId=''){
+  if(!navigator.mediaDevices?.getUserMedia){
+    status.textContent='Camera access requires a secure connection. Open this app on localhost or HTTPS, or enter the product SKU below.';
+    return;
+  }
+  const requestId=++cameraRequestId;
+  if(scanControls)scanControls.stop();
+  scanControls=null;
+  if(cameraStream){
+    cameraStream.getTracks().forEach(track=>track.stop());
+    cameraStream=null;
+    cameraTrack=null;
+  }
+  status.textContent='Connecting to camera…';
+  cameraSelect.disabled=true;
+  try{
+    const {BarcodeFormat,BrowserMultiFormatReader}=await loadBarcodeLibrary();
+    if(!active||requestId!==cameraRequestId)return;
+    const formats=[BarcodeFormat.EAN_13,BarcodeFormat.EAN_8,BarcodeFormat.UPC_A,BarcodeFormat.UPC_E,BarcodeFormat.CODE_128,BarcodeFormat.CODE_39,BarcodeFormat.CODE_93,BarcodeFormat.ITF,BarcodeFormat.CODABAR];
+    const hints=new Map([[2,formats],[3,true]]);
+    barcodeReader=new BrowserMultiFormatReader(hints,{delayBetweenScanAttempts:350,delayBetweenScanSuccess:350});
+    const videoConstraints={facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080},focusMode:{ideal:'continuous'}};
+    if(deviceId)videoConstraints.deviceId={exact:deviceId};
+    const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:videoConstraints});
+    if(!active||requestId!==cameraRequestId){stream.getTracks().forEach(track=>track.stop());return}
+    cameraStream=stream;
+    const videoTrack=stream.getVideoTracks()[0];
+    cameraTrack=videoTrack;
+    const zoomRange=videoTrack.getCapabilities?.().zoom;
+    if(zoomRange){
+      try{
+        await videoTrack.applyConstraints({advanced:[{zoom:Math.min(zoomRange.max,Math.max(zoomRange.min,digitalZoom))}]});
+      }catch(error){
+        console.warn('Initial camera zoom could not be applied.',error);
+      }
+    }
+    const focusModes=videoTrack.getCapabilities?.().focusMode;
+    if(focusModes?.includes('continuous')){
+      try{
+        await videoTrack.applyConstraints({advanced:[{focusMode:'continuous'}]});
+      }catch(error){
+        console.warn('Continuous camera focus could not be enabled.',error);
+      }
+    }
+    video.srcObject=stream;
+    await video.play();
+    if(!active||requestId!==cameraRequestId)return;
+    if(!video.videoWidth||!video.videoHeight)throw new Error('The camera started but did not provide a video image.');
+    const currentDeviceId=stream.getVideoTracks()[0].getSettings().deviceId;
+    const devices=await navigator.mediaDevices.enumerateDevices();
+    if(!active||requestId!==cameraRequestId)return;
+    const cameras=devices.filter(device=>device.kind==='videoinput');
+    cameraSelect.replaceChildren();
+    cameras.forEach((camera,index)=>{
+      const option=document.createElement('option');
+      option.value=camera.deviceId;
+      option.textContent=camera.label||`Camera ${index+1}`;
+      option.selected=camera.deviceId===currentDeviceId;
+      cameraSelect.appendChild(option);
+    });
+    cameraSelect.disabled=cameras.length<2;
+    cameraStream.getVideoTracks().forEach(track=>track.addEventListener('ended',()=>{
+      if(active)status.textContent='The camera connection ended. Close and reopen the scanner to reconnect.';
+    },{once:true}));
+    status.textContent='Scanning automatically. Select the camera showing the product and adjust zoom if needed.';
+    startDecoding();
+  }catch(error){
+    if(!active||requestId!==cameraRequestId)return;
+    cameraSelect.disabled=false;
+    const message=error.name==='NotAllowedError'
+      ?'Camera permission was denied. Allow camera access in your browser settings, or enter the product SKU below.'
+      :error.name==='NotFoundError'
+        ?'No camera was found. Connect a camera or enter the product SKU below.'
+        :error.name==='OverconstrainedError'
+          ?'That camera could not be opened. Choose another camera or reconnect it.'
+        :error.name==='NotReadableError'
+          ?'The camera is unavailable or being used by another app. Enter the product SKU below.'
+          :`Unable to start the barcode scanner: ${error.message||'unknown error'}. Enter the product SKU below.`;
+    status.textContent=message;
+  }
+}
+startCamera();
+}
+function overlay(title,body,onOk,okText){const o=document.createElement('div');o.className='overlay';o.innerHTML=`<header><button id="x" aria-label="Close" class="tag">✕ Close</button><b style="margin-left:6px">${title}</b></header><main>${body}</main><div style="padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line)"><button class="btn pri full" id="ok">${okText}</button></div>`;
+$('#app').appendChild(o);o.querySelector('#x').onclick=()=>o.remove();o.querySelector('#ok').onclick=()=>{if(onOk(o)!==false)o.remove()};return o}
+function addProduct(){openProductForm()}
+function editProduct(sku){
+  const product=P(sku);
+  if(!product){toast('Product not found');return}
+  openProductForm(product);
+}
+function deleteProduct(sku){
+  const product=P(sku);
+  if(!product){toast('Product not found');return}
+  const linkedOrders=S.pos.filter(order=>order.sku===sku).length;
+  const linkedCartItems=S.cart.filter(item=>item.sku===sku).length;
+  const details=[linkedOrders?`${linkedOrders} linked restock order${linkedOrders===1?'':'s'}`:'',linkedCartItems?'the item in your active cart':''].filter(Boolean).join(' and ');
+  overlay('Delete product',`<div class="card"><b>Delete ${escapeHtml(product.name)}?</b><p class="mut" style="margin-top:8px">This permanently removes the product from your catalog.${details?` It will also remove ${details}.`:''} This cannot be undone.</p></div>`,()=>{
+    S.products=S.products.filter(item=>item.sku!==sku);
+    S.pos=S.pos.filter(order=>order.sku!==sku);
+    S.cart=S.cart.filter(item=>item.sku!==sku);
+    syncRestockQueue();
+    saveWorkspace();
+    render();
+    toast('Product deleted');
+  },'Delete product');
+}
+function openProductForm(existingProduct=null){
+const isEdit=Boolean(existingProduct);
+let selectedImage=existingProduct?.image||'';
+const selectedCategory=existingProduct?.cat||'Electronics';
+const selectedUnit=existingProduct?.unit||'pcs';
+const o=overlay(isEdit?'Edit Product':'Add New Product',`
+<div class="card"><b>Identity & Capture</b>
+<div class="card" style="text-align:center;background:var(--priS);margin:8px 0;padding:12px">
+<div id="image-preview-box" style="width:70px;height:70px;margin:0 auto 10px;border-radius:16px;overflow:hidden;border:1px dashed rgba(127,142,255,.7);background:rgba(79,70,229,.08);display:grid;place-items:center;color:var(--pri);font-size:28px">${selectedImage?`<img src="${escapeHtml(selectedImage)}" alt="Product preview" style="width:100%;height:100%;object-fit:cover;display:block">`:'📷'}</div>
+<input id="product-image-input" type="file" accept="image/*" style="display:none">
+<button class="btn ghost" id="choose-image" type="button">${selectedImage?'Change Image':'Upload Image'}</button>${selectedImage?'<button class="btn ghost" id="remove-image" type="button">Remove Image</button>':''}
+<div class="tiny mut" style="margin-top:8px">JPG/PNG, up to 10MB</div>
+</div>
+<label for="f-sku">PRODUCT BARCODE / SERIAL SKU</label><div class="row"><input id="f-sku" value="${escapeHtml(existingProduct?.sku||'')}" placeholder="Scan a barcode or enter SKU"><button class="btn ghost" id="scan-product-barcode" type="button">Scan</button><button class="btn ghost" id="gen" type="button">Auto</button></div></div>
+<div class="card"><b>Product Specification</b><label for="f-n">OFFICIAL PRODUCT NAME</label><input id="f-n" value="${escapeHtml(existingProduct?.name||'')}" placeholder="Wireless Barcode Scanner Pro Max">
+<label for="f-c">INVENTORY DEPARTMENT / CATEGORY</label><select id="f-c">${[...new Set(['Electronics','Consumables','Hardware',selectedCategory])].map(category=>`<option ${category===selectedCategory?'selected':''}>${escapeHtml(category)}</option>`).join('')}</select>
+<div class="grid2"><div><label for="f-u">UNIT OF MEASURE</label><select id="f-u">${[['Pieces / Units (pcs)','pcs'],['Rolls','Rolls'],['Packs','Packs']].map(([label,unit])=>`<option value="${unit}" ${unit===selectedUnit?'selected':''}>${label}</option>`).join('')}</select></div><div><label for="f-w">PACKAGING WEIGHT (kg)</label><input id="f-w" type="number" min="0" step="0.001" value="${escapeHtml(existingProduct?.weight??'')}" placeholder="0.450"></div></div></div>
+<div class="card"><b>Unit Economics & Pricing</b><div class="grid2"><div><label for="f-cost">UNIT COST (₱)</label><input id="f-cost" type="number" min="0" step="0.01" value="${escapeHtml(existingProduct?.cost??'')}" placeholder="0.00"></div><div><label for="f-pr">SELL PRICE (₱)</label><input id="f-pr" type="number" min="0" step="0.01" value="${escapeHtml(existingProduct?.price??'')}" placeholder="0.00"></div>
+<div><label for="f-st">CURRENT STOCK</label><input id="f-st" type="number" min="0" step="1" value="${escapeHtml(existingProduct?.stock??0)}"></div><div><label for="f-mn">MIN. STOCK ALERT</label><input id="f-mn" type="number" min="0" step="1" value="${escapeHtml(existingProduct?.min??10)}"></div><div class="tiny mut" style="grid-column:1/-1">${isEdit?'Update the current stock level.':'Set the starting stock level.'} Future stock increases can also be recorded by receiving a restock order.</div></div></div>`,o=>{
+const v=id=>o.querySelector(id).value.trim();
+const name=v('#f-n');
+const sku=v('#f-sku');
+if(!name||!sku){toast('Enter a product name and SKU');return false}
+if(S.products.some(item=>item!==existingProduct&&item.sku.toLowerCase()===sku.toLowerCase())){toast('That SKU is already in use');return false}
+const numberFields=['#f-cost','#f-pr','#f-st','#f-mn','#f-w'];
+if(numberFields.some(selector=>v(selector)!==''&&!Number.isFinite(Number(v(selector))))){toast('Enter valid numbers for price, cost, stock, and weight');return false}
+const stock=Number(v('#f-st'));
+const minimumStock=Number(v('#f-mn'));
+const cost=Number(v('#f-cost')||0);
+const price=Number(v('#f-pr')||0);
+if(!Number.isInteger(stock)||stock<0||!Number.isInteger(minimumStock)||minimumStock<0||cost<0||price<0||Number(v('#f-w')||0)<0){toast('Stock, minimum stock, cost, price, and weight cannot be negative; stock must be whole units');return false}
+const product={...(existingProduct||{}),sku,name,cat:v('#f-c'),stock,min:minimumStock,price,cost,unit:v('#f-u')||'pcs',weight:v('#f-w'),e:existingProduct?.e||'📦',loc:existingProduct?.loc||'Receiving',image:selectedImage};
+if(isEdit){
+const previousSku=existingProduct.sku;
+Object.assign(existingProduct,product);
+if(previousSku!==sku){S.cart.forEach(item=>{if(item.sku===previousSku)item.sku=sku});S.pos.forEach(order=>{if(order.sku===previousSku){order.sku=sku;order.name=name}})}
+toast('Product updated');
+}else{S.products.unshift(product);toast('Product added to catalog')}
+syncRestockQueue();saveWorkspace();render();
+},isEdit?'Save Changes':'Save Product');
+const imageInput = o.querySelector('#product-image-input');
+const previewBox = o.querySelector('#image-preview-box');
+if (imageInput) {
+  o.querySelector('#choose-image').onclick = ()=> imageInput.click();
+  const removeImageButton=o.querySelector('#remove-image');
+  if(removeImageButton)removeImageButton.onclick=()=>{selectedImage='';previewBox.textContent='📷';removeImageButton.remove();o.querySelector('#choose-image').textContent='Upload Image'};
+  imageInput.onchange = e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast('Choose a valid image file');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast('Image must be 10MB or smaller');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = event => {
+      if(typeof event.target.result!=='string'){toast('Unable to load this image');return}
+      selectedImage = event.target.result;
+      previewBox.innerHTML = `<img src="${selectedImage}" alt="Product preview" style="width:100%;height:100%;object-fit:cover;display:block">`;
+      const removeButton=o.querySelector('#remove-image');
+      if(!removeButton){const button=document.createElement('button');button.type='button';button.id='remove-image';button.className='btn ghost';button.textContent='Remove Image';button.onclick=()=>{selectedImage='';previewBox.textContent='📷';button.remove();o.querySelector('#choose-image').textContent='Upload Image'};o.querySelector('#choose-image').after(button)}
+      o.querySelector('#choose-image').textContent='Change Image';
+    };
+    reader.onerror=()=>toast('Unable to read this image');
+    reader.readAsDataURL(file);
+  };
+}
+o.querySelector('#scan-product-barcode').onclick=()=>openBarcodeScanner(code=>{
+  const skuInput=o.querySelector('#f-sku');
+  skuInput.value=code;
+  skuInput.dispatchEvent(new Event('input',{bubbles:true}));
+  skuInput.dispatchEvent(new Event('change',{bubbles:true}));
+  skuInput.focus();
+  toast('Barcode added to product SKU');
+},'product');
+$('#gen').onclick=()=>$('#f-sku').value='SKU-'+Math.floor(1000+Math.random()*9000)}
+function stockMove(t){
+  if(t==='in'){
+    const receivableOrders=S.pos.filter(order=>['sent','transit'].includes(order.st)&&P(order.sku));
+    if(!receivableOrders.length){
+      const hasUnlinkedOrders=S.pos.some(order=>['sent','transit'].includes(order.st));
+      toast(hasUnlinkedOrders?'Link an inbound order to a product before receiving it':'Send a restock order before receiving stock');
+      return;
+    }
+    overlay('Receive Restock Order',`<div class="card"><label for="receive-po">INBOUND ORDER</label><select id="receive-po">${receivableOrders.map(order=>`<option value="${order.id}">${order.id} · ${order.name} · ${order.qty} ${order.unit}</option>`).join('')}</select><div class="tiny mut" style="margin-top:8px">Receiving adds the full order quantity to inventory once.</div></div>`,o=>{
+      receiveRestockOrder(o.querySelector('#receive-po').value);
+    },'Receive order');
+    return;
+  }
+  overlay('Deduct Stock',`<div class="card"><label for="m-p">PRODUCT</label><select id="m-p">${S.products.map(p=>`<option value="${p.sku}">${p.name} (${p.stock})</option>`).join('')}</select><label for="m-q">QUANTITY</label><input id="m-q" type="number" min="1" value="1"><label for="m-r">REASON</label><select id="m-r"><option>Dispatch</option><option>Shrinkage audit</option><option>Damaged</option></select></div>`,o=>{
+    const p=P(o.querySelector('#m-p').value),q=Math.max(1,+o.querySelector('#m-q').value||1);
+    if(q>p.stock){toast('Only '+p.stock+' units in stock');return false}
+    p.stock-=q;
+    syncRestockQueue();saveWorkspace();render();toast('Deducted '+q+' × '+p.name);
+  },'Deduct units');
+}
+login();
+</script></body></html>
